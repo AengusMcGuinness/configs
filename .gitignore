@@ -1,0 +1,16 @@
+# packages / caches
+elpa/
+eln-cache/
+auto-save-list/
+eshell/
+tramp/
+transient/
+url/
+projects/
+.lsp-session*
+# backups/autosaves
+*~
+\#*\#
+.#*
+# compiled elisp
+*.elc
