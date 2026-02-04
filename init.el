@@ -61,7 +61,7 @@
 
 (use-package lsp-mode
   :commands lsp
-  :hook ((c-mode c++-mode) . lsp)
+  :hook ((c-mode c++-mode python-mode) . lsp)
   :custom
   (lsp-keymap-prefix "C-c l"))
 
@@ -216,5 +216,37 @@
 ;; LaTeX indentation
 (setq LaTeX-indent-level 2)
 (setq LaTeX-item-indent 0)
-
+;; latex {} pairs
 (add-hook 'LaTeX-mode-hook #'electric-pair-local-mode)
+
+;;; ---------- Python IDE ----------
+
+;; Built-in python mode
+(use-package python
+  :ensure nil
+  :hook (python-mode . (lambda ()
+                        (setq python-indent-offset 4))))
+
+(setq lsp-pylsp-plugins-flake8-enabled nil) ;; (only relevant if using pylsp)
+
+;; Tell lsp-mode to use pyright
+(use-package lsp-pyright
+  :after lsp-mode
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-pyright)
+                         (lsp))))
+
+;; Makes emacs use the same python interpreter
+(use-package pyvenv
+  :config
+  (pyvenv-mode 1))
+
+;; auto formats python
+(use-package reformatter)
+
+(reformatter-define black-format
+  :program "black"
+  :args '("-q" "-"))
+
+(add-hook 'python-mode-hook #'black-format-on-save-mode)
+
