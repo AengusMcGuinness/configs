@@ -250,3 +250,29 @@
 
 (add-hook 'python-mode-hook #'black-format-on-save-mode)
 
+
+;; Create the directory if it doesn't exist
+(make-directory (expand-file-name "~/.emacs.d/saves/") t)
+
+;; Send backup files to the saves directory
+(setq backup-directory-alist `((".*" . "~/.emacs.d/saves/")))
+
+;; Send auto-save files to the saves directory
+(setq auto-save-file-name-transforms `((".*" "~/.emacs.d/saves/" t)))
+
+
+(use-package yasnippet
+  :ensure t
+  :init
+  (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
+  :config
+  (yas-global-mode 1)
+  (yas-reload-all)
+  :bind
+  (:map yas-minor-mode-map
+        ("C-c ," . yas-expand)))
+
+;; If you installed cmake-mode from ELPA/MELPA:
+(require 'cmake-mode)
+(add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-mode))
+(add-to-list 'auto-mode-alist '("\\.cmake\\'" . cmake-mode))
