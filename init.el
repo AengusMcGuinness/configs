@@ -32,7 +32,10 @@
           (lambda ()
             (setq c-basic-offset 4
                   tab-width 4
-                  indent-tabs-mode nil)))
+                  indent-tabs-mode nil)
+	    (electric-indent-local-mode 1)
+            (electric-pair-local-mode 1)
+            (c-toggle-electric-state 1)))
 
 ;;; --- Clipboard helper (your function unchanged) ---
 (defun my/pbcopy-region-via-tempfile (beg end)
