@@ -19,13 +19,11 @@
 (setq use-package-always-ensure t)
 
 ;;; --- Line numbers ---
-;; linum is old/slow; display-line-numbers is built-in and faster (Emacs 26+)
-;; If you prefer linum, you can keep it, but I'd strongly recommend this:
 (global-display-line-numbers-mode 1)
 (setq line-number-mode t)
 
 ;;; --- UI ---
-(setq make-backup-files nil)
+
 
 ;;; --- C++ style ---
 (add-hook 'c++-mode-hook
@@ -64,7 +62,7 @@
 
 (use-package lsp-mode
   :commands lsp
-  :hook ((c-mode c++-mode python-mode) . lsp)
+  :hook ((c-mode c++-mode) . lsp)
   :custom
   (lsp-keymap-prefix "C-c l"))
 
@@ -109,6 +107,39 @@
 (use-package vterm
   :commands vterm)
 
+;;; --- Projectile ---
+(use-package projectile
+  :init
+  (projectile-mode 1)
+  :custom
+  ;; Add the parent directories where your repos live
+  (projectile-project-search-path '("~/Desktop" "~/code" "~/hc3"))
+  ;; If you're not inside a detected project, prompt instead of guessing
+  (projectile-require-project-root 'prompt)
+  :bind-keymap
+  ("C-c p" . projectile-command-map))
+
+;;; --- AI Code Interface (Codex in Emacs) ---
+(use-package ai-code
+  :after (projectile vterm)
+  :config
+  (ai-code-set-backend 'codex)
+  (global-set-key (kbd "C-c a") #'ai-code-menu)
+  ;; Helpful for inserting repo file paths into prompts
+  (ai-code-prompt-filepath-completion-mode 1))
+
+;;; Optional: start AI from the current Projectile root
+(defun my/ai-code-here ()
+  "Start ai-code from the current Projectile project root."
+  (interactive)
+  (let ((default-directory
+          (if (fboundp 'projectile-project-root)
+              (or (projectile-project-root) default-directory)
+            default-directory)))
+    (call-interactively #'ai-code-menu)))
+
+(global-set-key (kbd "C-c C-a") #'my/ai-code-here)
+
 ;;; See tabs at the bottom
 (tab-bar-mode 1)
 (setq tab-bar-position 'bottom)
@@ -133,8 +164,17 @@
 (global-set-key (kbd "C-c ]") #'tab-next)
 ;;; Easy shortcuts
 (global-set-key (kbd "C-c s") #'rg)
-(global-set-key (kbd "C-c t") #'vterm)
 
+(defun my/project-vterm ()
+  "Open vterm in the current Projectile project root."
+  (interactive)
+  (let ((default-directory
+          (if (fboundp 'projectile-project-root)
+              (or (projectile-project-root) default-directory)
+            default-directory)))
+    (vterm)))
+
+(global-set-key (kbd "C-c t") #'my/project-vterm)
 
 ;; ---- Clean up tab-bar appearance ----
 (setq tab-bar-separator "  ")   ;; space between tabs
@@ -256,10 +296,9 @@
 
 ;; Create the directory if it doesn't exist
 (make-directory (expand-file-name "~/.emacs.d/saves/") t)
-
+(setq make-backup-files t)
 ;; Send backup files to the saves directory
 (setq backup-directory-alist `((".*" . "~/.emacs.d/saves/")))
-
 ;; Send auto-save files to the saves directory
 (setq auto-save-file-name-transforms `((".*" "~/.emacs.d/saves/" t)))
 
