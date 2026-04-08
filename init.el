@@ -25,6 +25,7 @@
 ;;; --- UI ---
 
 
+
 ;;; --- C++ style ---
 (add-hook 'c++-mode-hook
           (lambda ()
@@ -318,3 +319,7 @@
 (require 'cmake-mode)
 (add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-mode))
 (add-to-list 'auto-mode-alist '("\\.cmake\\'" . cmake-mode))
+
+
+;; for markdown to latex
+(setq markdown-command "pandoc")
