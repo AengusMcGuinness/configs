@@ -24,8 +24,6 @@
 
 ;;; --- UI ---
 
-
-
 ;;; --- C++ style ---
 (add-hook 'c++-mode-hook
           (lambda ()
