@@ -160,6 +160,14 @@
 (unless (server-running-p)
   (server-start))
 
+;;; --- Claude Code notifications ---
+(defun claude-code-done (project)
+  "Show a notification in all visible frames when Claude Code finishes."
+  (let ((msg (format "[Claude done] %s" project)))
+    (dolist (frame (visible-frame-list))
+      (with-selected-frame frame
+        (message "%s" msg)))))
+
 ;;; Easy moving between tabs
 (global-set-key (kbd "C-c [") #'tab-previous)
 (global-set-key (kbd "C-c ]") #'tab-next)
