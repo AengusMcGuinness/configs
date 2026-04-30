@@ -27,6 +27,23 @@
 ;; other window as the default target.
 (setq dired-dwim-target t)
 
+;;; --- Session / file sync ---
+(global-auto-revert-mode 1)
+(setq auto-revert-verbose nil
+      global-auto-revert-non-file-buffers t)
+(winner-mode 1)
+
+;;; --- Editing QoL ---
+(delete-selection-mode 1)
+(show-paren-mode 1)
+(global-subword-mode 1)
+(column-number-mode 1)
+
+;;; --- Code cleanup ---
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook #'delete-trailing-whitespace nil t)))
+
 ;;; --- UI ---
 
 ;;; --- C++ style ---
@@ -120,6 +137,9 @@
   (projectile-project-search-path '("~/Desktop" "~/code" "~/hc3"))
   ;; If you're not inside a detected project, prompt instead of guessing
   (projectile-require-project-root 'prompt)
+  :config
+  ;; After switching projects, show that project's files immediately.
+  (setq projectile-switch-project-action #'projectile-dired)
   :bind-keymap
   ("C-c p" . projectile-command-map))
 
