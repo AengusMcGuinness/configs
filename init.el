@@ -22,6 +22,11 @@
 (global-display-line-numbers-mode 1)
 (setq line-number-mode t)
 
+;;; --- Dired ---
+;; When copying or renaming from Dired, prefer the directory shown in the
+;; other window as the default target.
+(setq dired-dwim-target t)
+
 ;;; --- UI ---
 
 ;;; --- C++ style ---
