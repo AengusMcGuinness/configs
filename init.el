@@ -355,3 +355,46 @@
 
 ;; for markdown to latex
 (setq markdown-command "pandoc")
+
+
+;;; ---------- Rust ----------
+;; Toolchain lives in ~/.cargo/bin, which GUI Emacs (launched from Finder)
+;; does not inherit, so put it on exec-path explicitly.
+(let ((cargo-bin (expand-file-name "~/.cargo/bin")))
+  (when (file-directory-p cargo-bin)
+    (add-to-list 'exec-path cargo-bin)
+    (setenv "PATH" (concat cargo-bin ":" (getenv "PATH")))))
+
+;; Grammar source, so `M-x treesit-install-language-grammar RET rust` works
+;; on a fresh machine. The compiled library itself is not tracked.
+(add-to-list 'treesit-language-source-alist
+             '(rust "https://github.com/tree-sitter/tree-sitter-rust" "master" "src"))
+
+(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
+
+(add-hook 'rust-ts-mode-hook
+          (lambda ()
+            (setq rust-ts-mode-indent-offset 4
+                  tab-width 4
+                  indent-tabs-mode nil)
+            (electric-indent-local-mode 1)
+            (electric-pair-local-mode 1)
+            (add-hook 'before-save-hook #'delete-trailing-whitespace nil t)))
+
+;; rust-analyzer via lsp-mode, same as clangd for C/C++
+(add-hook 'rust-ts-mode-hook #'lsp)
+(with-eval-after-load 'lsp-mode
+  (setq lsp-rust-analyzer-cargo-watch-command "clippy"
+        lsp-rust-analyzer-server-display-inlay-hints t
+        lsp-rust-analyzer-display-parameter-hints t))
+
+;; cargo from the project root
+(defun my/cargo (cmd)
+  "Run a cargo CMD from the project root."
+  (interactive "scargo ")
+  (let ((default-directory
+         (or (and (fboundp 'projectile-project-root) (projectile-project-root))
+             default-directory)))
+    (compile (concat "cargo " cmd))))
+(with-eval-after-load 'rust-ts-mode
+  (define-key rust-ts-mode-map (kbd "C-c c") #'my/cargo))
