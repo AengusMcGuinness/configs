@@ -292,7 +292,8 @@
 (setq LaTeX-indent-level 2)
 (setq LaTeX-item-indent 0)
 ;; latex {} pairs
-(add-hook 'LaTeX-mode-hook #'electric-pair-local-mode)
+(dolist (hook '(LaTeX-mode-hook latex-mode-hook))
+  (add-hook hook #'electric-pair-local-mode))
 
 ;;; ---------- Python IDE ----------
 

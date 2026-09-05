@@ -1,0 +1,6 @@
+# name: minipage 0.48
+# key: mp48
+# --
+\begin{minipage}{0.48\linewidth}
+  $0
+\end{minipage}

@@ -3,10 +3,10 @@ elpa/
 eln-cache/
 auto-save-list/
 eshell/
-tramp/
+tramp
 transient/
 url/
-projects/
+projects
 .lsp-session*
 # backups/autosaves
 *~
