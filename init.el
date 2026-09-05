@@ -398,3 +398,39 @@
     (compile (concat "cargo " cmd))))
 (with-eval-after-load 'rust-ts-mode
   (define-key rust-ts-mode-map (kbd "C-c c") #'my/cargo))
+
+
+;;; ---------- Consult ----------
+;; Preview-capable versions of the built-in commands. Pairs with the
+;; vertico/orderless/marginalia stack already configured above.
+(use-package consult
+  :bind
+  (("C-x b"   . consult-buffer)                ;; was switch-to-buffer
+   ("C-x 4 b" . consult-buffer-other-window)
+   ("C-x r b" . consult-bookmark)
+   ("M-y"     . consult-yank-pop)
+   ("C-c s"   . consult-line)                  ;; search this buffer
+   ("C-c S"   . consult-line-multi)            ;; ...across open buffers
+   ("C-c r"   . consult-ripgrep)               ;; search the project
+   ("C-c f"   . consult-find)
+   ("M-g g"   . consult-goto-line)
+   ("M-g i"   . consult-imenu)                 ;; jump by definition
+   ("M-g I"   . consult-imenu-multi)
+   ("M-g e"   . consult-flymake))
+  :init
+  ;; let xref (M-. in C++/Rust) preview candidates before jumping
+  (setq xref-show-xrefs-function       #'consult-xref
+        xref-show-definitions-function #'consult-xref)
+  :config
+  ;; use the projectile root as "the project", to match C-c p
+  (setq consult-project-function
+        (lambda (_) (and (fboundp 'projectile-project-root)
+                         (projectile-project-root))))
+  ;; Buffers preview automatically; anything that opens files off disk
+  ;; waits for M-. so scrolling a big result list stays fast.
+  (consult-customize
+   consult-ripgrep consult-grep consult-git-grep consult-find
+   consult-recent-file consult-bookmark
+   consult--source-recent-file consult--source-project-recent-file
+   consult--source-bookmark
+   :preview-key "M-."))
